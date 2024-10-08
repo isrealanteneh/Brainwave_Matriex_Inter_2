@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block title %}<title>update item</title>
+  {% endblock%} 
+  {% block nav %}{% endblock%}
+  {% block categoriesearch %}{% endblock %}
+  {% block nav2%}
+  <div class=" container nav2 ">
+  <ul class="nav nav-underline">
+    <li class="nav-item">
+      {% block link1 %}<a class="nav-link active" aria-current="page" href="#">Edit product</a>{% endblock %}
+    </li>
+    <li class="nav-item">
+      {% block link2 %}<a class="nav-link" href="{% url 'view_inventory' %}">Products</a>{% endblock %}        
+    </li>
+  </ul>
+</div>
+  {% endblock %}
+  
+  {% block content %}
+    <div class="form-container">
+      <div class="child">
+      <h2>Update item</h2>
+      <form action="{% url  'save_changes' pk %}" method='POST'>
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          
+          {% for field in form %}
+              <div class="form-group">
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field }}
+                  {{ field.errors }}
+              </div>
+          {% endfor %}
+          
+          <button type='submit'>Save Change</submit>
+          </form>
+          <div>
+  </div>
+  {% endblock %}

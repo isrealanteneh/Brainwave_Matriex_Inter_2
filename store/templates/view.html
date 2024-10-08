@@ -1,0 +1,71 @@
+{% extends "base.html" %} {% block title %}<title>view Inventory</title>
+{%endblock%} {% block nav %} {% endblock %}
+
+{% block nav2%}
+<div class="container nav2">
+<ul class="nav nav-underline">
+ 
+  <li class="nav-item">
+    {% block link2 %}<a class="nav-link " href="{% url 'create_inventory' %}">Add Product</a>{% endblock %}        
+  </li>
+  <li class="nav-item">
+    {% block link1 %}<a class="nav-link active " href="{% url 'view_inventory' %}">Products</a>{% endblock %}        
+  </li>
+</ul>
+</div>
+{% endblock %}
+
+
+{% block content%}
+
+
+{% if messages %} {% for message in messages %}
+{% if forloop.first %}
+<div class="alert alert-success notifing-message" role="alert">
+{{ message }}
+</div>
+{% endif %} {% endfor %} {% endif %}
+{% if has_items %}
+<div class="container">
+<table class="table table-dark table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Roll No.</th>
+      <th scope="col">Name</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Price</th>
+      <th scope="col">Unit of Measure</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+    {% for item in items %}
+    <tr class="">
+      <td>{{ forloop.counter }}</td>
+      <td>{{ item.name}}</td>
+      <td>{{ item.amount }}</td>
+      <td>${{item.unit_price }}</td>
+      <td>{{item.unit_of_measure }}</td>
+      <td>
+        <form action="{% url 'update_inventory' item.id %}" method="POST">
+          {% csrf_token%}
+          <button type="submit" name="update" class="table-btn">edit</button>
+        </form>
+      </td>
+      <td>
+        <form action="{% url 'delete_inventory' item.id %}" method="POST">
+          {% csrf_token%}
+          <button type="submit" name="delete"class="table-btn delete">delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+
+<div class="alert alert-primary notifing-message" role="alert">
+  There are currently no Products
+  </div>
+{% endif %}
+{% endblock %}

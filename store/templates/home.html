@@ -1,0 +1,21 @@
+{% extends "base.html" %} {% block title %}<title>home</title>
+{% endblock%}  {% block categoriesearch %}{% endblock %}
+{% block nav2%}
+{% endblock %}
+{% block sidebar%}{% endblock %}
+{% block content%}
+    <div class="center-box">
+      <h2>Welcome to Inventory Managment System</h2>
+      <div class="forms">
+      <form action="{% url 'signup_view' %}" action="POST" >
+      {% csrf_token %}
+      <button type="submit" id="signup" name="signup" class="btn btn-outline-primary form-btn">Sign up</button>
+     </form>
+     <form action="{% url 'login_user' %}" action="POST" >
+      {% csrf_token %}
+      <button type="submit" id="login" name="login" class="btn btn-outline-success form-btn" >login </button>
+     </form>
+    </div>
+    </div>
+    </div>
+    {% endblock %}

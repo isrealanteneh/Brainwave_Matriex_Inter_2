@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% block title %}<title>Manager</title>
+{%endblock%}   {% block categoriesearch %}{% endblock %}
+{% block nav %} {% endblock %} 
+
+
+{% block nav2%}
+<div class=" container nav2 ">
+<ul class="nav nav-underline">
+  <li class="nav-item">
+    {% block link2 %}<a class="nav-link" href="{% url 'view_user' %}">Users</a>{% endblock %}        
+  </li>
+  {% if is_stuff %}
+ 
+  {% else %}
+  <li class="nav-item">
+    {% block link1 %}<a class="nav-link active" aria-current="page" href="{% url 'manage_user' %}">Manage user</a>{% endblock %}
+  </li>
+  {% endif %}
+</ul>
+</div>
+{% endblock %}
+
+{% block content%}
+<div class="container">
+  <form action="{% url  'manage_user' %}" method="POST">
+    <table class="table table-dark table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Roll No.</th>
+          <th scope="col">Name</th>
+          <th scope="col">Role</th>
+          <th scope="col">Status</th>
+          <th scope="col">Edit role</th>
+          <th scope="col">Edit status</th>
+        </tr>
+      </thead>
+      <tbody class="table-group-divider">
+        {% for storeuser in storeusers %}
+        <tr class="items">
+          <td>{{ forloop.counter }}</td>
+          <td>{{ storeuser.user}}</td>
+          <td>{{ storeuser.role}}</td>
+          <td>{{ storeuser.user_status}}</td>
+
+          {% for field in form %}
+          <td>{{ field }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% csrf_token%}
+    <button type="submit" name="edit" class="save-btn ">Save changes</button>
+  </form>
+</div>
+{% endblock %}

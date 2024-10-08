@@ -1,0 +1,71 @@
+{% extends "../base.html" %} {% block title %}<title>Orders</title> {% endblock%}
+{% block categoriesearch %}{% endblock %}
+
+{% block nav2%}
+<div class=" container nav2 ">
+<ul class="nav nav-underline">
+ 
+  <li class="nav-item">
+    {% block link2 %}<a class="nav-link active" href="{% url 'view_saved_order' %}">Orders</a>{% endblock %}        
+  </li>
+  {% if is_stuff %}
+  {% else %}
+  <li class="nav-item">
+    {% block link3 %}<a class="nav-link " href="{% url 'manage_order' %}">Manage order</a>{% endblock %}        
+  </li>
+  <li class="nav-item">
+    {% block link1 %}<a class="nav-link " href="{% url 'make_order_view' %}">Add Order</a>{% endblock %}        
+  </li>
+ 
+  {% endif %}
+</ul>
+</div>
+{% endblock %}
+
+
+{%block nav %}{% endblock %}
+
+{% block content%}
+{% if messages %} {% for message in messages %}
+{% if forloop.first %}
+<div class="alert alert-success notifing-message" role="alert">
+{{ message }}
+</div>
+{% endif %} {% endfor %} {% endif %}
+
+{% if has_order %}
+
+<div class="container">
+<table class="table table-dark table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Roll No.</th>
+      <th scope="col">Name</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Price</th>
+      <th scope="col">Shipping address</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+    {% for order in orders %}
+    <tr class="items">
+      <td>{{ forloop.counter }}</td>
+      <td>{{ order.name}}</td>
+      <td>{{ order.amount }}</td>
+      <td>{{ order.total_price }}</td>
+      <td>{{order.shipping_address }}</td>
+      <td>{{ order.status }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div> 
+
+{% else %}
+
+<div class="alert alert-primary notifing-message" role="alert">
+There are currently no orders
+</div>
+{% endif %}
+{% endblock %}

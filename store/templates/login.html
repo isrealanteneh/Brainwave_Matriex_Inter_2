@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block title %}<title>Login</title> {% endblock%}
+{% block nav2%}{% endblock%}
+{%block navlink%} 
+<a href="{% url 'signup_view' %}">Create account</a>
+{% endblock %} 
+{% block categoriesearch %}{% endblock %}
+{% block sidebar%}{% endblock %} 
+
+{% block content%}
+<div class="login-container login-box center-box">
+  <h2>Login</h2>
+  {% if messages %} {% for message in messages %} {% if forloop.first %}
+  <p style="color: red">{{ message }}</p>
+  {% endif %} {% endfor %} {% endif %}
+  <form action="{% url 'login_user' %}" method="POST">
+    {% csrf_token %} {{ form }}
+    <button type="submit" class="btn btn-primary" id="login" name="login">
+      Login
+    </button>
+  </form>
+</div>
+
+{% endblock %}

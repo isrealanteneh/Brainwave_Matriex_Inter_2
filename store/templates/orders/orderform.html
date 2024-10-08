@@ -1,0 +1,41 @@
+{% extends "../base.html" %} 
+{% block title %}<title>create order</title> {% endblock%}  {% block categoriesearch %}{% endblock %}
+
+{% block nav %}{% endblock%}
+{% block nav2%}
+    <div class=" container nav2 ">
+    <ul class="nav nav-underline">
+      <li class="nav-item">
+        {% block link1 %}<a class="nav-link active" aria-current="page" href="#">Add order</a>{% endblock %}
+      </li>
+      <li class="nav-item">
+        {% block link2 %}<a class="nav-link" href="{% url 'view_saved_order' %}">Orders</a>{% endblock %}        
+      </li>
+     
+    </ul>
+  </div>
+    {% endblock %}
+
+
+{% block content%}
+
+<div class="form-container">
+  <div class="child">
+  <h2>Order form</h2>
+  <form action ="{% url 'saved_orders' pk %}" method="POST" >
+    {% csrf_token %}
+      {{ form.non_field_errors }}
+      
+      {% for field in form %}
+          <div class="form-group">
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {{ field.errors }}
+          </div>
+      {% endfor %}
+      
+      <button type="submit" name="edit" class="save_btn">Save</button>
+    </form>
+      <div>
+</div>
+{% endblock %}

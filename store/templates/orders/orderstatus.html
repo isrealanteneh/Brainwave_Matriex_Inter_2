@@ -1,0 +1,64 @@
+{% extends "../base.html" %} {% block title %}<title>Orders</title> {% endblock%}
+
+{% block nav %}{% endblock %}  {% block categoriesearch %}{% endblock %}
+
+{% block nav2%}
+<div class=" container nav2 ">
+<ul class="nav nav-underline">
+ 
+  {% if is_stuff %}
+
+  {% else %}
+  <li class="nav-item">
+    {% block link2 %}<a class="nav-link active" href="{% url 'manage_order' %}">Manage order</a>{% endblock %}        
+  </li>
+  <li class="nav-item">
+    {% block link1 %}<a class="nav-link " href="{% url 'make_order_view' %}">Add Order</a>{% endblock %}        
+  </li>
+  {% endif %}
+</ul>
+</div>
+{% endblock %}
+
+{% block content %}
+{% if has_order %}
+<div class="container ">
+    <form action="{% url  'manage_order' %}" method="POST">
+      <table class="table table-dark table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Roll No.</th>
+            <th scope="col">Name</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Total Price</th>
+            <th scope="col">Shipping address</th>
+            <th scope="col">Status</th>
+  
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          {% for order in orders %}
+          <tr class="items">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ order.name}}</td>
+            <td>{{ order.amount }}</td>
+            <td>${{ order.total_price }}</td>
+            <td>{{order.shipping_address }}</td>
+            <td>{{ form }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% csrf_token%}
+      <button type="submit" name="edit" class="save_btn">Save changes</button>
+    </form>
+  </div>
+
+  {% else %}
+
+  <div class="alert alert-primary notifing-message" role="alert">
+  There are currently no orders
+  </div>
+  {% endif %}  
+
+  {% endblock %}

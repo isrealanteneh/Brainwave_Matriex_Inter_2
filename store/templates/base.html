@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+    rel="stylesheet"
+    type="text/css"
+    href="{% static './css/bootstrap.css' %}"
+  />
+  <link rel="stylesheet" type="text/css" href="{% static 'mystyle.css' %}"></link>
+  
+    {% block title %}{% endblock%}
+  </head>
+  <body>
+    {% block nav %}
+    <div class="mynavbar">
+      <nav class="navbar bg-body-tertiary bg-primary">
+        <div class="container-fluid">
+          <span class="header-nav navbar-brand mb-0 h1">
+            <span> {% block homelink %}<a href="{% url 'home_link_view' %}" class="link">IMS</a>{% endblock %} </span>
+            <span>{% block navlink %}{% endblock %}</span>
+          </span>
+        </div>
+      </nav>
+    </div>
+    {% endblock %}
+    
+{% block nav2%}
+    <div class=" container nav2 ">
+    <ul class="nav nav-underline">
+      <li class="nav-item">
+        {% block link1 %}<a class="nav-link active" aria-current="page" href="#">Active</a>{% endblock %}
+      </li>
+      <li class="nav-item">
+        {% block link2 %}<a class="nav-link" href="#">Add Product</a>{% endblock %}        
+      </li>
+      <li class="nav-item">        
+        {% block link3 %}<a class="nav-link" href="#">Link</a>{% endblock %}        
+      </li>
+    </ul>
+ </div>
+ {% endblock %}
+
+  {% block categoriesearch %}
+    <div class="container search-bar">
+<form action="{% url 'view_inventory' %}" method="POST">
+  {% csrf_token %}
+<select id="category" name="category" class="form-select" aria-label="Default select example" onchange="get_selected_categorie()">
+<option value="">Select a category</option>
+<option value="electronics">Electronics</option>
+<option value="clothing">Clothing</option>
+<option value="home and kitchen">Home and Kitchen</option>
+<option value="beauty and personal care">Beauty and Personal Care</option>
+<option value="sports and outdoors">Sports and Outdoors</option>
+<option value="groceries">Groceries</option>
+<option value="toys and games">Toys and Games</option>
+<option value="automotive">Automotive</option>
+<option value="books and media">Books and Media</option>
+<option value="health and wellness">Health and Wellness</option>
+<option value="office supplies">Office Supplies</option>
+<option value="pet supplies">Pet Supplies</option>
+<option value="arts and crafts">Arts and Crafts</option>
+<option value="baby and kids">Baby and Kids</option>
+</select>
+<input type='hidden' id='selected_option' name='selected_option' value=''>
+<input type='submit' value='select'>
+</form> 
+</div>
+    {% endblock %}
+    
+    
+    {% block sidebar%}
+  <div class="sidebar">
+  <div class="sidebar-avater">
+    <div class="avater" style="background-color:{{ color }};">{{ user.username|slice:":1" }}</div>
+    <p class="username">{{ user }}</p>
+  </div>
+  <ul>
+    <li><a href="{% url 'view_inventory' %}" class="active">Home </a></li>     
+    <li><a href="{% url 'view_inventory' %}" class="active">Categories</a></li>
+    <li><a href="{% url 'view_inventory' %}">Products</a></li>
+    <li><a href="{% url 'view_user' %}"> Users</a></li>
+    {% if is_stuff%}
+    <li><a href="{%  url 'view_saved_order' %}">Orders</a></li>
+    {% else %}
+    <li><a href="{% url 'view_sales' %}"> Sales</a></li>
+    <li><a href="{%  url 'manage_order' %}">Order</a></li>
+
+    {% endif %}
+    <li><a href="{% url 'logout_view' %}"> Log out</a></li>
+   
+  </ul>
+</div>
+    {% endblock %}
+
+    {% block content %}
+    {% endblock %}
+    
+    
+    <script>
+      function get_selected_categorie(){
+        var select = document.getElementById('category');
+        var hidden_input = document.getElementById('selected_option');
+        hidden_input.value = select.options[select.selectedIndex].value;
+      }
+      </script>
+  </body>
+</html>
+
+
+

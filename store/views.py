@@ -1,8 +1,11 @@
-from django.shortcuts import render, redirect ,get_object_or_404
+from django.shortcuts import render, redirect ,get_object_or_404,HttpResponse
 from django.contrib.auth import authenticate , login ,logout
 from .forms import UserCreationForm ,ProductForm ,LoginForm,MangegerForm,OrderForm,MangegerOrderForm
 from django.contrib import messages
 from .models import Product, StoreUser , User, Order, Sale, StoreReport
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
 import re
 import random
 
@@ -257,7 +260,8 @@ def manage_user(request):
     context = {
         "form": form,
         "storeusers":store_users,
-        "color":account_color
+        "color":account_color,
+        "is_stuff":check_user_role(),
     }    
     return render(request,"manager.html", context)
 
@@ -305,6 +309,7 @@ def view_inventory(request):
                 "user":request.user,
                 "color":account_color,
                 "has_items":has_items,
+                "is_stuff":check_user_role(request),
         }
         return render(request,'view.html', context)
     return render(request, 'home.html')
@@ -358,17 +363,76 @@ def delete_inventory(request, pk):
 
 ################################ functions focus on generating REPORT ##################################
  
-def generate_report():
-    report_data = [] # put all data processed in this view to this list and insert into storeReport model
-    # getting low_stock_level_items
-    low_level_items = Product.objects.filter(amount__lt=10).count()
-    # getting sold items amount
-    sold_items = Sale.objects.all()
-    total_sold_price = 0
-    for item in sold_items:
-       total_sold_price += item.price
-    sold_items_amount = len(sold_items)
-    order_amount = Order.objects.all().count() 
+def generate_report(request):
+    low_level_items = Product.objects.filter(amount__lt=10).count()  # getting low_stock_level_items
+    sold_items = Sale.objects.all()  # getting sold items amount
+    total_sold_price = sum(item.price for item in sold_items)
+    sold_items_amount = sold_items.count()
+    order_amount = Order.objects.all().count()
     canceled_orders = canceled_order
     report_data = StoreReport(low_stock_level_items=low_level_items,sold_items_amount=sold_items_amount,sold_items_price=total_sold_price,order_amount=order_amount,canceled_orders=canceled_orders)
-    report_data.save()    
+    report_data.save()  
+    # Save report data into StoreReport model
+    report_data = StoreReport(
+        low_stock_level_items=low_level_items,
+        sold_items_amount=sold_items_amount,
+        sold_items_price=total_sold_price,
+        order_amount=order_amount,
+        canceled_orders=canceled_orders
+    )
+    report_data.save()
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="Store report.pdf"'
+
+    p = canvas.Canvas(response, pagesize=letter)
+    width, height = letter
+    y = height - 50 
+
+    # Add Title
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(100, y, "Sales and Store Report")
+    y -= 30  # Space after title
+
+    # Add report details to the PDF
+    p.setFont("Helvetica", 12)
+    p.drawString(100, y, f"Low Stock Level Items: {low_level_items}")
+    y -= 20
+    p.drawString(100, y, f"Sold Items Amount: {sold_items_amount}")
+    y -= 20
+    p.drawString(100, y, f"Total Sold Price: {total_sold_price:.2f}")
+    y -= 20
+    p.drawString(100, y, f"Order Amount: {order_amount}")
+    y -= 20
+    p.drawString(100, y, f"Canceled Orders: {canceled_orders}")
+    y -= 40
+
+    # List all products
+    products = Product.objects.all()
+    for product in products:
+        p.drawString(100, y, f"Product Name: {product.name}")
+        p.drawString(100, y - 20, f"Amount: {product.amount}")
+        y -= 40 
+        if y < 50:  
+            p.showPage()
+            y = height - 50  
+    # Add Summary at the bottom
+    p.showPage()  # Start a new page for the summary
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(100, height - 50, "Summary")
+    y = height - 80  
+    
+    p.setFont("Helvetica", 12)
+    p.drawString(100, y, f"{low_level_items} products  are Low level items. ")
+    y -= 20
+    p.drawString(100, y, f"{sold_items_amount} products are sold in this week.")
+    y -= 20
+    p.drawString(100, y, f"Total Sales Revenue $:{total_sold_price:.2f}")
+    y -= 20
+    p.drawString(100, y, f"Total Orders: {order_amount}")
+    y -= 20
+    p.drawString(100, y, f"{canceled_orders} orders are canceled")
+
+    p.showPage()
+    p.save()
+
+    return response

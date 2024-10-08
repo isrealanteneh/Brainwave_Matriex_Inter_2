@@ -6,11 +6,17 @@
 <ul class="nav nav-underline">
  
   <li class="nav-item">
-    {% block link2 %}<a class="nav-link " href="{% url 'create_inventory' %}">Add Product</a>{% endblock %}        
-  </li>
-  <li class="nav-item">
     {% block link1 %}<a class="nav-link active " href="{% url 'view_inventory' %}">Products</a>{% endblock %}        
   </li>
+  <li class="nav-item">
+    {% block link2 %}<a class="nav-link " href="{% url 'create_inventory' %}">Add Product</a>{% endblock %}        
+  </li>
+  {% if is_stuff %}
+  {% else %}
+  <li class="nav-item">
+    {% block link3 %}<a class="nav-link " href="{% url 'generate_report' %}">Download report</a>{% endblock %}        
+  </li>
+  {% endif %}
 </ul>
 </div>
 {% endblock %}

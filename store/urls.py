@@ -23,6 +23,8 @@ urlpatterns = [
     path("view/", views.view_inventory, name="view_inventory"),
     path("update/<int:pk>/", views.update_inventory, name="update_inventory"), 
     path("save/<int:pk>/", views.save_changes, name="save_changes"),
-    path("delete/<int:pk>/", views.delete_inventory, name="delete_inventory")
+    path("delete/<int:pk>/", views.delete_inventory, name="delete_inventory"),
+    # report 
+    path("report/",views.generate_report, name="generate_report"),
 
 ]

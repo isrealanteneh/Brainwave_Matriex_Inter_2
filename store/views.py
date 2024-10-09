@@ -5,7 +5,6 @@ from django.contrib import messages
 from .models import Product, StoreUser , User, Order, Sale, StoreReport
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
 import re
 import random
 
@@ -261,7 +260,7 @@ def manage_user(request):
         "form": form,
         "storeusers":store_users,
         "color":account_color,
-        "is_stuff":check_user_role(),
+        "is_stuff":check_user_role(request),
     }    
     return render(request,"manager.html", context)
 

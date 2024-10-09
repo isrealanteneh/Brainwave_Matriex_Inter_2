@@ -11,7 +11,7 @@
   {% endif %} {% endfor %} {% endif %}
   <form action="{% url 'signup_view' %}" method="POST">
     {% csrf_token %} {{ form }}
-    <button type="submit" id="signup" name="signup">Sign Up</button>
+    <button type="submit" id="signup" class="btn btn-primary" name="signup">Sign Up</button>
   </form>
 </div>
 {% endblock %}

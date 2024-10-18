@@ -1,15 +1,27 @@
 from django.shortcuts import render, redirect ,get_object_or_404,HttpResponse
-from django.contrib.auth import authenticate , login ,logout
+from django.contrib.auth import authenticate , login ,logout, get_user_model
 from .forms import UserCreationForm ,ProductForm ,LoginForm,MangegerForm,OrderForm,MangegerOrderForm
 from django.contrib import messages
 from .models import Product, StoreUser , User, Order, Sale, StoreReport
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
 import re
 import random
 
 
 # Create your views here.
+
+# create super user as soon as the program run for the first time 
+def create_super_user():
+    User =  get_user_model()
+    super_user_exists = User.objects.filter(is_superuser=True).exists() # check if there is super user
+    if super_user_exists is False: # if no super user create super user
+        # create super user
+        superuser = User.objects.create_superuser(
+            username='admin',
+            password='@20Admins'
+        )
+       
+       
+create_super_user()  
 
 # this is home page or landing page 
 def home_link_view(request):
@@ -26,7 +38,10 @@ def copy_user_record(model1,model2): #called when a new user added to auth_user 
         for user in last_records:
             user_id = user.id
             role = "staff"
-            store_user = StoreUser(user_id=user_id, user=user,role=role)
+            if user.is_superuser:
+                role="admin"
+            print(user.username,">>>>>>>>>>>>>>>>>>>")
+            store_user = StoreUser(user_id=user_id, user=user,role=role,user_status='active')
             try:
                 store_user.save()
                 print("new record saved successfully")
@@ -189,6 +204,10 @@ def signup_view(request):
                 form.save()
                 copy_user_record(User,StoreUser)
                 return redirect('login_user') # then redirect the new user to login page
+            else:
+                messages.error(request,"you already have an account please Login")
+                return redirect("login_user")
+                    
     form = UserCreationForm()
     return render(request, 'signup.html', {'form':form})
 
@@ -202,12 +221,13 @@ def logout_view(request):
 def login_user(request):
     if request.method == 'POST':
         form = LoginForm(data=request.POST) # get login form data
-        if form.is_valid():    
+        if form.is_valid():  
                 username = form.cleaned_data.get('username') # find username from form data
                 password = form.cleaned_data.get('password') # find password from from data
                 user = authenticate(username=username,password=password) # authenticate user using django built in authentication functionality
                 if user is not None: #check if user is exist
-                    storeuser = get_object_or_404(StoreUser,user_id=user.id) # get the user from store users model
+                    copy_user_record(User,StoreUser)
+                    storeuser = StoreUser.objects.get(user_id=user.id) # get the user from store users model
                     if storeuser.user_status == 'active': # and check if user is active or not only actvie users can logged in
                         login(request,user)
                         return redirect('view_inventory') #if logging in is successfull redirect to a page that has all products list 
@@ -239,9 +259,16 @@ def check_user_role(request):
         is_stuff = False   
     return is_stuff
  
+ 
+#  user_roles = {user.id: user.role for user in store_users}  # Adjust 'role' to your actual field
+    # form.fields['role'].choices = [(user_id, role) for user_id, role in user_roles.items()]
+
 def manage_user(request): 
     form = MangegerForm()
     store_users = StoreUser.objects.all()
+    user_roles = {user.id: user.role for user in store_users}  # Adjust 'role' to your actual field
+    form.fields['role'].instance = [(user_id, role) for user_id, role in user_roles.items()]
+
     if request.method == "POST":
         form = MangegerForm(request.POST)
         new_roles = request.POST.getlist('role') # get the list of role form all users as a list to compare with the new roles

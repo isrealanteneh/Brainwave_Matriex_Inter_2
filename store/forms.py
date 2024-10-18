@@ -43,6 +43,9 @@ class MangegerForm(forms.ModelForm):
             "role":"",
             "user_status":"",
         }
+   
+        
+        
 class MangegerOrderForm(forms.ModelForm):
     class Meta:
         model = Order

@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate , login ,logout, get_user_model
 from .forms import UserCreationForm ,ProductForm ,LoginForm,MangegerForm,OrderForm,MangegerOrderForm
 from django.contrib import messages
 from .models import Product, StoreUser , User, Order, Sale, StoreReport
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 import re
 import random
 
@@ -126,13 +128,13 @@ def view_saved_order(request):
 canceled_order = 0 # used to count canceled order 
 
 def manage_order(request):
+    status_form = MangegerOrderForm()
     is_stuff = check_user_role(request) # this function return bool value.  This can check user is stuff or not
-    form = MangegerOrderForm()
     orders = Order.objects.all()
     if request.method == "POST":
-        form = MangegerOrderForm(request.POST)
+        status_form = MangegerOrderForm(request.POST)
         new_status = request.POST.getlist('status') # get the list of order status weather it fulfiled or canceled
-        if form.is_valid():
+        if status_form.is_valid():
             for i in range(len(orders)):
                 if new_status[i] == "fulfilled":  #move this order to sales table and delete the order from order table
                     sold_order = Sale(name=orders[i].name, price=orders[i].total_price,customer_address=orders[i].shipping_address) # adding fulfiled order to sales table with those fields
@@ -161,7 +163,7 @@ def manage_order(request):
     if len(orders) > 0:
         has_order = True                 
     context = {
-        "form": form,
+        "status_form": status_form,
         "orders":orders,
         "color":account_color, # giving random color for each users in their avator
         "is_stuff":is_stuff, # to know the user role weather stuff , manager or admin
@@ -260,38 +262,36 @@ def check_user_role(request):
     return is_stuff
  
  
-#  user_roles = {user.id: user.role for user in store_users}  # Adjust 'role' to your actual field
-    # form.fields['role'].choices = [(user_id, role) for user_id, role in user_roles.items()]
-
-def manage_user(request): 
-    form = MangegerForm()
-    store_users = StoreUser.objects.all()
-    user_roles = {user.id: user.role for user in store_users}  # Adjust 'role' to your actual field
-    form.fields['role'].instance = [(user_id, role) for user_id, role in user_roles.items()]
-
-    if request.method == "POST":
-        form = MangegerForm(request.POST)
-        new_roles = request.POST.getlist('role') # get the list of role form all users as a list to compare with the new roles
-        new_status = request.POST.getlist('user_status') # get the list of user status as a list to compare with the new status
-        if form.is_valid():
-            for i in range(len(store_users)):
-                if store_users[i].role != new_roles[i]: # if there is a change track and save it # track the changes in edit role field and save the new role
-                    store_users[i].role = new_roles[i] # get the changes and update the existing role
-                    store_users[i].save()
-                    return redirect("view_user")                   
-                if store_users[i].user_status != new_status[i]: # track the changes in edit status field and save the new status
-                    store_users[i].user_status = new_status[i] # get the changes and update the existing role
-                    store_users[i].save()
-                    return redirect("view_user")                   
-    context = {
+def manage_user(request,pk):
+    if request.user.is_authenticated:
+        data = StoreUser.objects.get(id=pk)
+        form = MangegerForm(instance=data)
+        context = {
         "form": form,
-        "storeusers":store_users,
+        "storeusers":data,
+        "pk":pk,
         "color":account_color,
         "is_stuff":check_user_role(request),
     }    
     return render(request,"manager.html", context)
 
-
+def save_change_user(request,pk):
+    if request.user.is_authenticated:
+        data = StoreUser.objects.get(id=pk)
+        if request.method == 'POST':
+            form = MangegerForm(request.POST, instance=data)
+            role = request.POST.get('role')
+            user_status = request.POST.get('user_status')
+            data.role = role
+            data.user_status = user_status
+            data.save()            
+            messages.success(request,"User updated successfully")
+            return redirect("view_user")
+        else:
+            messages.error(request,"User not updated successfully")
+            return redirect("view_user")
+    return render(request, 'home.html')
+    
 
 ################################ functions focus on processing SALES ##################################
 

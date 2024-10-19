@@ -27,7 +27,7 @@
         <tr>
           <th scope="col">Roll No.</th>
           <th scope="col">Name</th>
-          <th scope="col">Price</th>
+          <th scope="col">Unit Price</th>
           <th scope="col">Customer address</th>
           
         </tr>
@@ -37,7 +37,7 @@
         <tr class="items">
           <td>{{ forloop.counter }}</td>
           <td>{{ sale.name}}</td>
-          <td>{{ sale.price}}</td>
+          <td>${{ sale.price}}</td>
           <td>{{ sale.customer_address}}</td>
 
         </tr>

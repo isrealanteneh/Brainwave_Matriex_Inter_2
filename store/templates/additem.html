@@ -6,10 +6,10 @@
 <div class=" container nav2 ">
 <ul class="nav nav-underline">
   <li class="nav-item">
-    {% block link1 %}<a class="nav-link active" href="{% url 'create_inventory' %}">Add Product</a>{% endblock %}        
+    {% block link1 %}<a class="nav-link active" href="{% url 'create_inventory' %}">Add Item</a>{% endblock %}        
   </li>
   <li class="nav-item">
-    {% block link2 %}<a class="nav-link " href="{% url 'view_inventory' %}">Products</a>{% endblock %}        
+    {% block link2 %}<a class="nav-link " href="{% url 'view_inventory' %}">Items</a>{% endblock %}        
   </li>
 </ul>
 </div>
@@ -31,7 +31,7 @@
           </div>
       {% endfor %}
       
-      <button type="submit">create inventory</button>
+      <button type="submit">Create Item</button>
       </form>
       <div>
 </div>

@@ -6,10 +6,10 @@
 <ul class="nav nav-underline">
  
   <li class="nav-item">
-    {% block link1 %}<a class="nav-link active " href="{% url 'view_inventory' %}">Products</a>{% endblock %}        
+    {% block link1 %}<a class="nav-link active " href="{% url 'view_inventory' %}">Items</a>{% endblock %}        
   </li>
   <li class="nav-item">
-    {% block link2 %}<a class="nav-link " href="{% url 'create_inventory' %}">Add Product</a>{% endblock %}        
+    {% block link2 %}<a class="nav-link " href="{% url 'create_inventory' %}">Add Item</a>{% endblock %}        
   </li>
   {% if is_stuff %}
   {% else %}
@@ -71,7 +71,7 @@
 {% else %}
 
 <div class="alert alert-primary notifing-message" role="alert">
-  There are currently no Products
+  There are currently no Items
   </div>
 {% endif %}
 {% endblock %}

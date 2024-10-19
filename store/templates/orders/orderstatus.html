@@ -13,7 +13,7 @@
     {% block link2 %}<a class="nav-link active" href="{% url 'manage_order' %}">Manage order</a>{% endblock %}        
   </li>
   <li class="nav-item">
-    {% block link1 %}<a class="nav-link " href="{% url 'make_order_view' %}">Add Order</a>{% endblock %}        
+    {% block link1 %}<a class="nav-link " href="{% url 'view_saved_order' %}">Order</a>{% endblock %}        
   </li>
   {% endif %}
 </ul>
@@ -33,7 +33,6 @@
             <th scope="col">Total Price</th>
             <th scope="col">Shipping address</th>
             <th scope="col">Status</th>
-  
           </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -43,10 +42,10 @@
             <td>{{ order.name}}</td>
             <td>{{ order.amount }}</td>
             <td>${{ order.total_price }}</td>
-            <td>{{order.shipping_address }}</td>
-            <td>{{ form }}</td>
+            <td>{{order.shipping_address }}</td> 
+            <td>{{ status_form.as_p }}</td>
           </tr>
-          {% endfor %}
+         {% endfor %}
         </tbody>
       </table>
       {% csrf_token%}

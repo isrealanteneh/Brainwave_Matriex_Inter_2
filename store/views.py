@@ -5,6 +5,8 @@ from django.contrib import messages
 from .models import Product, StoreUser , User, Order, Sale, StoreReport
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from django.db.utils import OperationalError
+
 import re
 import random
 
@@ -14,15 +16,15 @@ import random
 # create super user as soon as the program run for the first time 
 def create_super_user():
     User =  get_user_model()
-    super_user_exists = User.objects.filter(is_superuser=True).exists() # check if there is super user
-    if super_user_exists is False: # if no super user create super user
-        # create super user
-        superuser = User.objects.create_superuser(
-            username='admin',
-            password='@20Admins'
-        )
-       
-       
+    try:
+        if not User.objects.filter(is_superuser=True).exists():
+            User.objects.create_superuser(username='admin', email='admin@israel.com', password='@20Israel')
+            print("Superuser created successfully.")
+        else:
+            print("Superuser already exists.")
+    except OperationalError:
+        print("Database not ready yet.")
+
 create_super_user()  
 
 # this is home page or landing page 
